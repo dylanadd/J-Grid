@@ -24,7 +24,8 @@
  */
 
 $(document).ready(function() {
-    // Custom jQuery functions to check and remove classes based on prefix
+
+	 // Custom jQuery functions to check and remove classes based on prefix
     $.fn.hasClassStartingWith = function(prefix) {
         return this.attr('class').split(/\s+/).some(cls => cls.startsWith(prefix));
     };
@@ -38,59 +39,56 @@ $(document).ready(function() {
     };
 
 	// Custom jQuery function to check if any class ends with the given suffix
-$.fn.hasClassEndingWith = function(suffix) {
-    return this.attr('class').split(/\s+/).some(cls => cls.endsWith(suffix));
-};
+	$.fn.hasClassEndingWith = function(suffix) {
+    	return this.attr('class').split(/\s+/).some(cls => cls.endsWith(suffix));
+	};
 
-// Custom jQuery function to remove all classes that end with the given suffix
-$.fn.removeClassEndingWith = function(suffix) {
-    this.each(function() {
-        var classes = this.className.split(" ").filter(c => !c.endsWith(suffix));
-        this.className = $.trim(classes.join(" "));
-    });
-    return this;
-};
+	// Custom jQuery function to remove all classes that end with the given suffix
+	$.fn.removeClassEndingWith = function(suffix) {
+    	this.each(function() {
+        	var classes = this.className.split(" ").filter(c => !c.endsWith(suffix));
+        	this.className = $.trim(classes.join(" "));
+    	});
+    	return this;
+	};
 
+    // Define Bootstrap breakpoints
+    const breakpoints = {
+        'sm': '576px',
+        'md': '768px',
+        'lg': '992px',
+        'xl': '1200px',
+        'xxl': '1400px'
+    };
 
     // Function to process the class name and generate CSS
     function processClassName(className) {
         const parts = className.split('-');
         const type = parts[1]; // 'grid', 'col', or 'row'
-        const size = parts[2] || 1; // default size to 1 if not specified
+        const size = parts[2]; // this should always be present as either size or breakpoint prefix
         const breakpoint = parts[3]; // might be undefined if not specified
 
         let css = '';
 
-        // Define Bootstrap breakpoints
-        const breakpoints = {
-            sm: '576px',
-            md: '768px',
-            lg: '992px',
-            xl: '1200px',
-            xxl: '1400px'
-        };
-
         // Determine the property based on type
         if (type === 'grid') {
-            css = `{ display: grid; grid-template-columns: repeat(${size}, 1fr); }`;
+            css = `display: grid; grid-template-columns: repeat(${size}, 1fr);`;
         } else if (type === 'col') {
-            css = `{ grid-column: span ${size}; }`;
+            css = `grid-column: span ${size};`;
         } else if (type === 'row') {
-            css = `{ grid-row: span ${size}; }`;
+            css = `grid-row: span ${size};`;
         }
 
         // Add media query if breakpoint is specified
         if (breakpoint && breakpoints[breakpoint]) {
-            css = `@media (min-width: ${breakpoints[breakpoint]}) { .${className} ${css} }`;
+            return `@media (min-width: ${breakpoints[breakpoint]}) { .${className} { ${css} } }`;
         } else {
-            css = `.${className} ${css}`;
+            return `.${className} { ${css} }`;
         }
-
-        return css;
     }
 
-    // Collect all elements with classes starting with 'j-grid'
-    const allClasses = new Set(); // Use a set to avoid duplicates
+    // Collect and sort all classes starting with 'j-'
+    const allClasses = new Set();
     $('[class*="j-"]').each(function() {
         const classList = $(this).attr('class').split(/\s+/);
         classList.forEach(cls => {
@@ -103,9 +101,16 @@ $.fn.removeClassEndingWith = function(suffix) {
         });
     });
 
-    // Generate CSS for each unique class
+    // Convert Set to Array and sort by specificity (non-breakpoint first, then breakpoint)
+    const sortedClasses = Array.from(allClasses).sort((a, b) => {
+        const aCount = (a.match(/-/g) || []).length;
+        const bCount = (b.match(/-/g) || []).length;
+        return aCount - bCount;
+    });
+
+    // Generate CSS for each unique class, ensuring proper order of application
     let dynamicStyles = '';
-    allClasses.forEach(cls => {
+    sortedClasses.forEach(cls => {
         dynamicStyles += processClassName(cls);
     });
 
@@ -114,5 +119,3 @@ $.fn.removeClassEndingWith = function(suffix) {
         $('head').append(`<style>${dynamicStyles}</style>`);
     }
 });
-
-
