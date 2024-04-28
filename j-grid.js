@@ -1,3 +1,27 @@
+/**
+ * Dynamic CSS Grid Injection Script
+ * 
+ * This script dynamically injects CSS Grid classes into a <style> tag in the document's head.
+ * It interprets classes prefixed with "j-grid" to apply CSS Grid properties directly,
+ * enhancing layout capabilities while managing potential conflicts with Bootstrap styles.
+ * 
+ * Features:
+ * - Automatically generates and injects CSS for elements with j-grid classes.
+ * - Removes conflicting Bootstrap classes to ensure grid styles apply correctly.
+ * - Supports responsive grid behaviors with Bootstrap breakpoint compatibility.
+ * 
+ * Author: Dylan Addington
+ * Created to facilitate the use of CSS Grid with a class-based approach in web projects.
+ * 
+ * GitHub Repository: https://github.com/dylanadd/J-Grid
+ * Visit the repository for source code, contribution guidelines, and updates.
+ * 
+ * Usage:
+ * Add j-grid prefixed classes to your HTML elements to define CSS Grid properties.
+ * For example, use 'j-grid-3' for three columns, or 'j-grid-md-col-2' for responsive two-column span at the MD breakpoint.
+ * 
+ * License: MIT
+ */
 $(document).ready(function() {
     // This function processes the class name and generates CSS
     function processClassName(className) {
