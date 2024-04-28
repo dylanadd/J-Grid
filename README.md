@@ -1,5 +1,5 @@
 
-### README for J-Grid A Dynamic CSS Grid Injection Script
+### README for J-Grid: A Dynamic CSS Grid Injection Script
 
 ---
 
